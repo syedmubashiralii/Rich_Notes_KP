@@ -1,18 +1,19 @@
-import 'package:flutter/foundation.dart' as foundation;
-import 'package:get/get.dart';
 import 'dart:io';
-import 'package:permission_handler/permission_handler.dart';
+
 import 'package:archive/archive.dart';
 import 'package:encrypt/encrypt.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rich_notes_kp/app/core/helpers/helpers.dart';
+
 import '../../core/constants/app_constants.dart';
 import 'base_cryptor.dart';
-import 'package:path_provider/path_provider.dart';
 
 part 'file_cryptor.dart';
 
-// Initialize encryption controller as user successfully logged in
+// Initialize encryption controller on user successfully logged in
 class EncryptorController extends GetxController {
   String? temporaryDirectoryPath;
 
@@ -38,7 +39,6 @@ class EncryptorController extends GetxController {
 
   initializeEncryptorInstance(String secureKey) {
     String key = create16DigitKey(secureKey);
-    // Initialize _fileCryptor value
     _fileCryptor = _FileCryptor(
       key: key, //"qwertyuiop@#%^&*()_+1234567890,;",
       iv: 8,
@@ -67,50 +67,26 @@ class EncryptorController extends GetxController {
   }
 
   Future<String> encryptSalsa(String dataInString, fileName) async {
+    // create function for inputting permission according to different OS version
     await inputPermission();
-
     debugLog("start encryption: ${DateTime.now()}");
-    // setState(() {
-    //   encrypting = true;
-    // });
     try {
-      // debugLog("inputFile: pickedFile?.path,: ${pickedFile?.path}");
-      // File pickedFile = File("p.join(dir, inputFile)");
-      // File appDocumentsDir = File("");
-      File outputDirectory = File("${temporaryDirectoryPath}/encryptedData");
-
+      File outputDirectory = File("$temporaryDirectoryPath/encryptedData");
       File encryptedFile = await _fileCryptor.encryptSalsa20(
-        // inputFile: pickedFile?.path,
         dataInStringForm: dataInString,
-        outputFile: "${outputDirectory.path}/${fileName}.aes",
+        outputFile: "${outputDirectory.path}/$fileName.aes",
       );
       debugLog(encryptedFile.absolute);
       debugLog("end encryption: ${DateTime.now()}");
       return encryptedFile.path;
-      // setState(() {
-      //   encryptedPath = encryptedFile.absolute.toString();
-      //   encrypting = false;
-      // });
     } catch (e) {
       debugLog("exception: $e");
       throw "Error in encryption: $e";
-      // setState(() {
-      //   encryptedPath = "exception: $e";
-      //   encrypting = false;
-      // });
     }
   }
 
   Future<String> decryptSalsa(String filePath) async {
     debugLog("start decryption: ${DateTime.now()}");
-
-    // setState(() {
-    //   decrypting = true;
-    // });
-
-    File appDocumentsDir = File("");
-    File outputDirectory = File("");
-
     try {
       String decryptedFileContent = await _fileCryptor.decryptSalsa20(
         inputFile: filePath, // "${appDocumentsDir.path}/${fileName}.aes",
@@ -120,17 +96,9 @@ class EncryptorController extends GetxController {
       debugLog(decryptedFileContent);
       debugLog("end decryption: ${DateTime.now()}");
       return decryptedFileContent;
-      // setState(() {
-      //   decryptedPath = decryptedFile.absolute.toString();
-      //   decrypting = false;
-      // });
     } catch (e) {
       debugLog("exception: $e");
       throw "Error in encryption: $e";
-      // setState(() {
-      //   decryptedPath = "exception: $e";
-      //   decrypting = false;
-      // });
     }
   }
 
@@ -139,7 +107,7 @@ class EncryptorController extends GetxController {
       debugLog("not exist");
       await getPath();
     } else {
-      debugLog("yes exist: ${temporaryDirectoryPath}");
+      debugLog("yes exist: $temporaryDirectoryPath");
     }
   }
 
@@ -160,17 +128,5 @@ class EncryptorController extends GetxController {
     }
 
     return mergedString.substring(0, 16);
-  }
-
-  generateKeys() {
-    String userPassword = 'u!@er1234';
-
-    debugLog('Derived Key: ${create16DigitKey(userPassword)}');
-  }
-
-  debugLog(Object object) {
-    if (foundation.kDebugMode) {
-      print(object);
-    }
   }
 }
