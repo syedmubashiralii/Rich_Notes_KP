@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
 
-class RichEditorController extends GetxController {
-  //TODO: Implement RichEditorController
+import '../../../data/providers/medical_record_provider.dart';
 
+class RichEditorController extends GetxController {
   final count = 0.obs;
+
   @override
   void onInit() {
     super.onInit();
