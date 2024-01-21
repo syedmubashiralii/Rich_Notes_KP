@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 
 import '../../../controllers/encryptor_controller/encryptor_controller.dart';
@@ -11,7 +10,6 @@ class CounterView extends GetView<CounterController> {
   @override
   Widget build(BuildContext context) {
     EncryptorController controller = Get.find<EncryptorController>();
-    controller.generateKeys();
     return Scaffold(
       appBar: AppBar(
         title: const Text('EncrypterView'),
